@@ -58,6 +58,10 @@ dependencies {
     // Swagger
     implementation ('org.springdoc:springdoc-openapi-ui:1.6.14')
 
+    // Jasypt
+    implementation group: 'com.github.ulisesbocchio', name: 'jasypt-spring-boot-starter', version: '3.0.5'
+
+
 
 }
 

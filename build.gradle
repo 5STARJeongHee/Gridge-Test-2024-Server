@@ -35,7 +35,8 @@ dependencies {
     annotationProcessor ('org.projectlombok:lombok:1.18.24')
 
     // DB
-    implementation (group: 'org.postgresql', name: 'postgresql', version: '42.7.2')
+    implementation 'org.mariadb.jdbc:mariadb-java-client:3.3.3'
+
 
 //    runtimeOnly ('mysql:mysql-connector-java') //mysql8
     //runtimeOnly 'mysql:mysql-connector-java:5.1.47' //mysql5

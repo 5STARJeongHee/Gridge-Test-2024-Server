@@ -16,11 +16,11 @@ import java.time.LocalDateTime;
 public class BaseEntity {
 
     @CreationTimestamp
-    @Column(name = "createdAt", nullable = false, updatable = false)
+    @Column(name = "createdAt", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updatedAt", nullable = false)
+    @Column(name = "updatedAt", nullable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime updatedAt;
 
     @Enumerated(EnumType.STRING)

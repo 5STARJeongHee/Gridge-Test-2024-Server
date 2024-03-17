@@ -9,7 +9,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostLoginReq {
-    private String userId;
-    private String password;
+public class PatchServiceTermsReq {
+    private long id;
+    private boolean servicePolicyAgreed;
+
+    private boolean dataPolicyAgreed;
+
+    private boolean locationPolicyAgreed;
 }

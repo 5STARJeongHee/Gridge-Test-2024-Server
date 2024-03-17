@@ -1,34 +1,58 @@
 package com.example.demo.common.oauth;
 
-import com.example.demo.common.Constant;
+import com.example.demo.common.Constant.*;
+import com.example.demo.common.Role;
+import com.example.demo.common.config.JwtProperties;
 import com.example.demo.common.exceptions.BaseException;
+import com.example.demo.src.token.RefreshTokenRepository;
+import com.example.demo.src.token.RefreshTokenService;
+import com.example.demo.src.token.entity.RefreshToken;
+import com.example.demo.src.user.CustomAuthenticationSuccessHandler;
+import com.example.demo.src.user.OauthUserService;
 import com.example.demo.src.user.UserService;
+import com.example.demo.src.user.entity.SocialUser;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.Duration;
 
-import static com.example.demo.common.response.BaseResponseStatus.INVALID_OAUTH_TYPE;
+import static com.example.demo.common.response.BaseResponseStatus.*;
 
 @Service
 @RequiredArgsConstructor
 public class OAuthService {
     private final GoogleOauth googleOauth;
+    private final KaKaoOauth kaKaoOauth;
     private final HttpServletResponse response;
+    private final UserDetailsService userDetailsService;
     private final UserService userService;
+    private final OauthUserService oAuthUserService;
+
+    private final CustomAuthenticationSuccessHandler successHandler;
+    private final JwtProperties jwtProperties;
     private final JwtService jwtService;
-
-
-    public void accessRequest(Constant.SocialLoginType socialLoginType) throws IOException {
+    private final RefreshTokenRepository refreshTokenRepository;
+    // OAuth2ClientRe
+    public void accessRequest(SocialLoginType socialLoginType) throws IOException {
         String redirectURL;
         switch (socialLoginType){ //각 소셜 로그인을 요청하면 소셜로그인 페이지로 리다이렉트 해주는 프로세스이다.
             case GOOGLE:{
                 redirectURL= googleOauth.getOauthRedirectURL();
-            }break;
+                break;
+            }
+            case KAKAO:{
+                redirectURL= kaKaoOauth.getOauthRedirectURL();
+                break;
+            }
             default:{
                 throw new BaseException(INVALID_OAUTH_TYPE);
             }
@@ -39,7 +63,7 @@ public class OAuthService {
     }
 
 
-    public GetSocialOAuthRes oAuthLoginOrJoin(Constant.SocialLoginType socialLoginType, String code) throws IOException {
+    public GetSocialOAuthRes oAuthLoginOrJoin(SocialLoginType socialLoginType, String code) throws IOException {
 
         switch (socialLoginType) {
             case GOOGLE: {
@@ -53,23 +77,23 @@ public class OAuthService {
                 //다시 JSON 형식의 응답 객체를 자바 객체로 역직렬화한다.
                 GoogleUser googleUser = googleOauth.getUserInfo(userInfoResponse);
 
+                String oauthId = googleUser.getId();
+                String email = googleUser.getEmail();
                 //우리 서버의 db와 대조하여 해당 user가 존재하는 지 확인한다.
-                if(userService.checkUserByEmail(googleUser.getEmail())) { // user가 DB에 있다면, 로그인 진행
-                    // 유저 정보 조회
-                    GetUserRes getUserRes = userService.getUserByEmail(googleUser.getEmail());
+                return attemptAuthentication(oauthId, email, SocialLoginType.GOOGLE);
+            }
 
-                    //서버에 user가 존재하면 앞으로 회원 인가 처리를 위한 jwtToken을 발급한다.
-                    String jwtToken = jwtService.createJwt(getUserRes.getId());
+            case KAKAO: {
+                ResponseEntity<String> accessTokenResponse = kaKaoOauth.requestAccessToken(code);
 
-                    //액세스 토큰과 jwtToken, 이외 정보들이 담긴 자바 객체를 다시 전송한다.
-                    GetSocialOAuthRes getSocialOAuthRes = new GetSocialOAuthRes(jwtToken, getUserRes.getId(), oAuthToken.getAccess_token(), oAuthToken.getToken_type());
-                    return getSocialOAuthRes;
-                }else { // user가 DB에 없다면, 회원가입 진행
-                    // 유저 정보 저장
-                    PostUserRes postUserRes = userService.createOAuthUser(googleUser.toEntity());
-                    GetSocialOAuthRes getSocialOAuthRes = new GetSocialOAuthRes(postUserRes.getJwt(), postUserRes.getId(), oAuthToken.getAccess_token(), oAuthToken.getToken_type());
-                    return getSocialOAuthRes;
-                }
+                KakaoOAuthToken oAuthToken = kaKaoOauth.getAccessToken(accessTokenResponse);
+
+                ResponseEntity<String> userInfoResponse = kaKaoOauth.requestUserInfo(oAuthToken);
+
+                KakaoUser kakaoUser = kaKaoOauth.getUserInfo(userInfoResponse);
+                String oauthId = kakaoUser.getId();
+                String email = kakaoUser.getKakao_account().email;
+                return attemptAuthentication(oauthId, email, SocialLoginType.KAKAO);
             }
             default: {
                 throw new BaseException(INVALID_OAUTH_TYPE);
@@ -78,5 +102,50 @@ public class OAuthService {
         }
     }
 
+    private GetSocialOAuthRes attemptAuthentication(String oauthId, String email, SocialLoginType socialLoginType) {
+        SecurityUser user = null;
+        GetSocialOAuthRes socialUser = null;
+        try{
+            // 유저는 존재하나 Oauth 유저 등록이 안됬거나 다른 종류의 Oauth user가 등록될 경우
+            user = (SecurityUser) userDetailsService.loadUserByUsername(email);
+            if(!oAuthUserService.checkSocialUserByOauthId(oauthId, socialLoginType)){
+                oAuthUserService.createOAuthUser(PostOauthUserReq.builder()
+                        .oauthId(oauthId)
+                        .userId(email)
+                        .socialLoginType(socialLoginType)
+                        .exist(false).build()
+                );
+            }
+
+            // 유저 상태 처리
+            if(!user.isEnabled()){
+                throw new BaseException(INACTIVE_USER);
+            }
+            if(!user.isAccountNonLocked()){
+                throw new BaseException(LOCK_USER);
+            }
+            if(!user.isAccountNonExpired()){
+                throw new BaseException(EXPIRE_USER);
+            }
+
+        }catch (UsernameNotFoundException | BaseException e){
+            // 기존 등록된 유저가 존재 하지 않아 회원가입을 진행하면서 Oauth 유저 등록이 필요한 경우
+            user = SecurityUser.builder().email(email).role(Role.GUEST).build();
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                    user,
+                    "",
+                    user.getAuthorities()
+            );
+            return successHandler.onOauthAuthenticationSuccess(authentication, oauthId, socialLoginType, false);
+        }
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                user,
+                "",
+                user.getAuthorities()
+        );
+        GetSocialOAuthRes getSocialOAuthRes = successHandler.onOauthAuthenticationSuccess(authentication, oauthId, socialLoginType, true);
+        getSocialOAuthRes.setServiceTermsCheck(user.isServicePolicyAgreed() && user.isDataPolicyAgreed() && user.isLocationPolicyAgreed());
+        return getSocialOAuthRes;
+    }
 
 }

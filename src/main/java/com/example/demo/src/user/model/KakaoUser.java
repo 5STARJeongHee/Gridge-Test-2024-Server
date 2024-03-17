@@ -9,24 +9,33 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-//구글(서드파티)로 액세스 토큰을 보내 받아올 구글에 등록된 사용자 정보
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GoogleUser {
+public class KakaoUser {
     public String id;
-    public String email;
-    public Boolean verifiedEmail;
-    public String name;
-    public String givenName;
-    public String familyName;
-    public String picture;
-    public String locale;
+    public Properties properties;
+    public LocalDateTime connected_at;
+    public KakaoAcount kakao_account;
 
-    public User toEntity() {
+    public static class KakaoAcount{
+        public Profile profile;
+        public String email;
+    }
+    public static class Profile {
+        public String nickname;
+    }
+
+    public static class Properties {
+        public String nickname;
+    }
+
+    public User toEntity(){
         return User.builder()
-                .email(this.email)
+                .email(this.kakao_account.email)
                 .password("NONE")
                 .role(Role.MEMBER)
                 .build();
@@ -35,8 +44,9 @@ public class GoogleUser {
     public SocialUser toSocialUserEntity() {
         return SocialUser.builder()
                 .oauthId(id)
-                .oauthType(Constant.SocialLoginType.GOOGLE)
+                .oauthType(Constant.SocialLoginType.KAKAO)
                 .user(toEntity())
                 .build();
     }
+
 }

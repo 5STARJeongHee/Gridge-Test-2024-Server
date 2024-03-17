@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
-@ActiveProfiles("dev")
+@ActiveProfiles(value = {"dev", "prod"})
 @Import(value = {JasyptConfig.class})
 @SpringBootTest
 public class JasyptTest {
@@ -27,6 +27,9 @@ public class JasyptTest {
     private String GOOGLE_CLIENT_ID;
     @Value("${spring.OAuth2.google.client-secret}")
     private String GOOGLE_CLIENT_SECRET;
+
+    @Value("${spring.OAuth2.kakao.client-id}")
+    private String KAKAO_CLIENT_ID;
     @Value("${jwt.secret-key}")
     private String JWT_SECRET_KEY;
     @Value("${spring.datasource.url}")
@@ -35,6 +38,7 @@ public class JasyptTest {
     private String DATASOURCE_USERNAME;
     @Value("${spring.datasource.password}")
     private String DATASOURCE_PASSWORD;
+
 
     @DisplayName("jasypt 암호화 정보 생성")
     @Test
@@ -58,6 +62,8 @@ public class JasyptTest {
         String datasourcePassword = jasyptStringEncryptor.encrypt(DATASOURCE_PASSWORD);
         String decryptDatasourcePassword = jasyptStringEncryptor.decrypt(datasourcePassword);
 
+        String kakaoClientId = jasyptStringEncryptor.encrypt(KAKAO_CLIENT_ID);
+        String decryptKakoClientId = jasyptStringEncryptor.decrypt(kakaoClientId);
 
         Assertions.assertEquals(GOOGLE_CLIENT_ID, decryptGoogleClientId);
         Assertions.assertEquals(GOOGLE_CLIENT_SECRET, decryptGoogleClientSecret);
@@ -65,13 +71,16 @@ public class JasyptTest {
         Assertions.assertEquals(DATASOURCE_URL, decryptDatasourceUrl);
         Assertions.assertEquals(DATASOURCE_USERNAME, decryptDatasourceUsername);
         Assertions.assertEquals(DATASOURCE_PASSWORD, decryptDatasourcePassword);
+        Assertions.assertEquals(KAKAO_CLIENT_ID, decryptKakoClientId);
 
         log.debug(" GOOGLE_CLIENT_ID: [" + GOOGLE_CLIENT_ID + "] has encrypted: " + "ENC("+googleClientId+")");
         log.debug(" GOOGLE_CLIENT_SECRET: [" + GOOGLE_CLIENT_SECRET + "] has encrypted: " + "ENC("+googleClientSecret+")");
+        log.debug(" KAKAO_CLIENT_ID: [" + KAKAO_CLIENT_ID + "] has encrypted: " + "ENC("+kakaoClientId+")");
         log.debug(" JWT_SECRET_KEY: [" + JWT_SECRET_KEY + "] has encrypted: " + "ENC("+jwtSecretKey+")");
         log.debug(" DATASOURCE_URL: [" + DATASOURCE_URL + "] has encrypted: " + "ENC("+datasourceUrl+")");
         log.debug(" DATASOURCE_USERNAME: [" + DATASOURCE_USERNAME + "] has encrypted: " + "ENC("+datasourceUsername+")");
         log.debug(" DATASOURCE_PASSWORD: [" + DATASOURCE_PASSWORD + "] has encrypted: " + "ENC("+datasourcePassword+")");
+
 
     }
 

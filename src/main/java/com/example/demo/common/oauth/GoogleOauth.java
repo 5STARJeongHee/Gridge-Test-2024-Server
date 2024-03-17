@@ -1,5 +1,6 @@
 package com.example.demo.common.oauth;
 
+import com.example.demo.common.SocialLoginParam;
 import com.example.demo.src.user.model.GoogleOAuthToken;
 import com.example.demo.src.user.model.GoogleUser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -44,10 +45,10 @@ public class GoogleOauth implements SocialOauth {
     public String getOauthRedirectURL() {
 
         Map<String, Object> params = new HashMap<>();
-        params.put("scope", GOOGLE_DATA_ACCESS_SCOPE);
-        params.put("response_type", "code");
-        params.put("client_id", GOOGLE_SNS_CLIENT_ID);
-        params.put("redirect_uri", GOOGLE_SNS_CALLBACK_LOGIN_URL);
+        params.put(SocialLoginParam.SCOPE.toString(), GOOGLE_DATA_ACCESS_SCOPE);
+        params.put(SocialLoginParam.RESPONSE_TYPE.toString(), "code");
+        params.put(SocialLoginParam.CLIENT_ID.toString(), GOOGLE_SNS_CLIENT_ID);
+        params.put(SocialLoginParam.REDIRECT_URI.toString(), GOOGLE_SNS_CALLBACK_LOGIN_URL);
 
 
         //parameter를 형식에 맞춰 구성해주는 함수
@@ -70,11 +71,11 @@ public class GoogleOauth implements SocialOauth {
         String GOOGLE_TOKEN_REQUEST_URL = "https://oauth2.googleapis.com/token";
         RestTemplate restTemplate = new RestTemplate();
         Map<String, Object> params = new HashMap<>();
-        params.put("code", code);
-        params.put("client_id", GOOGLE_SNS_CLIENT_ID);
-        params.put("client_secret", GOOGLE_SNS_CLIENT_SECRET);
-        params.put("redirect_uri", GOOGLE_SNS_CALLBACK_LOGIN_URL);
-        params.put("grant_type", "authorization_code");
+        params.put(SocialLoginParam.RESPONSE_TYPE.toString(), code);
+        params.put(SocialLoginParam.CLIENT_ID.toString(), GOOGLE_SNS_CLIENT_ID);
+        params.put(SocialLoginParam.CLIENT_SECRET.toString(), GOOGLE_SNS_CLIENT_SECRET);
+        params.put(SocialLoginParam.REDIRECT_URI.toString(), GOOGLE_SNS_CALLBACK_LOGIN_URL);
+        params.put(SocialLoginParam.GRANT_TYPE.toString(), "authorization_code");
 
         ResponseEntity<String> responseEntity=restTemplate.postForEntity(GOOGLE_TOKEN_REQUEST_URL,
                 params,String.class);

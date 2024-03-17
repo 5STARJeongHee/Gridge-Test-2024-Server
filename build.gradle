@@ -49,6 +49,14 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter')
     implementation('org.springframework.boot:spring-boot-starter-web')
 
+    // Security
+    implementation('org.springframework.boot:spring-boot-starter-security')
+    testImplementation('org.springframework.security:spring-security-test')
+    implementation('org.springframework.boot:spring-boot-starter-oauth2-client')
+
+    // Thymeleaf Template Engine
+    implementation('org.springframework.boot:spring-boot-starter-thymeleaf')
+
     // Validation
     implementation('org.springframework.boot:spring-boot-starter-validation')
 
@@ -62,6 +70,7 @@ dependencies {
     // Jasypt
     implementation group: 'com.github.ulisesbocchio', name: 'jasypt-spring-boot-starter', version: '3.0.5'
 
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 
 
 }

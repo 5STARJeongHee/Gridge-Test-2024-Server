@@ -1,16 +1,22 @@
 package com.example.demo.src.user.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class PostLoginRes {
 
-    private Long id;
-    private String jwt;
+    private String userId;
+    private String accessToken;
+    private String refreshToken;
+    private boolean serviceTermsCheck;
+
+    @Builder
+    public PostLoginRes(String userId, String accessToken, String refreshToken, boolean serviceTermsCheck) {
+        this.userId = userId;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+        this.serviceTermsCheck = serviceTermsCheck;
+    }
 }

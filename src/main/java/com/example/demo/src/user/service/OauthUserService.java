@@ -1,7 +1,9 @@
-package com.example.demo.src.user;
+package com.example.demo.src.user.service;
 
 import com.example.demo.common.Constant;
 import com.example.demo.common.exceptions.BaseException;
+import com.example.demo.src.user.repository.SocialUserRepository;
+import com.example.demo.src.user.repository.UserRepository;
 import com.example.demo.src.user.entity.SocialUser;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.GetSocialOAuthRes;
@@ -15,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
+import static com.example.demo.common.State.ACTIVE;
 import static com.example.demo.common.response.BaseResponseStatus.*;
 
 @Transactional
@@ -36,6 +38,9 @@ public class OauthUserService {
                 ;
 
         if(user != null){
+            if(socialUserRepository.findByOauthIdAndOauthType(socialUser.getOauthId(), socialUser.getOauthType()).isPresent()){
+                throw new BaseException(DUPLICATED_USER);
+            }
             socialUser.updateUser(user);
         } else {
             PostUserReq postUserReq = postOauthUserReq.getUser();

@@ -1,18 +1,14 @@
-package com.example.demo.src.user;
+package com.example.demo.src.user.controller;
 
 import com.example.demo.common.Constant.*;
-import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.oauth.OAuthService;
-import com.example.demo.common.response.BaseResponse;
-import com.example.demo.src.user.model.*;
+import com.example.demo.src.user.service.UserService;
 import com.example.demo.utils.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
 
 @Slf4j
 @RequiredArgsConstructor

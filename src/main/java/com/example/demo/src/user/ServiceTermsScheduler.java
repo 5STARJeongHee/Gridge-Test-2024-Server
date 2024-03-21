@@ -1,6 +1,7 @@
 package com.example.demo.src.user;
 
 import com.example.demo.src.user.entity.User;
+import com.example.demo.src.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -8,7 +9,8 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
+import static com.example.demo.common.State.ACTIVE;
+
 
 @RequiredArgsConstructor
 @Component

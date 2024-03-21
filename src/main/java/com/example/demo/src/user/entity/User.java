@@ -1,7 +1,8 @@
 package com.example.demo.src.user.entity;
 
 import com.example.demo.common.Role;
-import com.example.demo.common.config.AESConverter;
+import com.example.demo.common.State;
+import com.example.demo.common.jpa.AESConverter;
 import com.example.demo.common.entity.BaseEntity;
 import lombok.*;
 

@@ -1,11 +1,17 @@
-package com.example.demo.src.user;
+package com.example.demo.src.user.controller;
 
 
 import com.example.demo.common.Constant;
 import com.example.demo.common.Constant.SocialLoginType;
 import com.example.demo.common.PasswordValidStatus;
 import com.example.demo.common.oauth.OAuthService;
+import com.example.demo.src.user.service.OauthUserService;
+import com.example.demo.src.user.service.UserService;
 import com.example.demo.utils.ValidationRegex;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.response.BaseResponse;
@@ -19,6 +25,7 @@ import java.io.IOException;
 import static com.example.demo.common.response.BaseResponseStatus.*;
 import static com.example.demo.utils.ValidationRegex.*;
 
+@Tag(name = "유저", description = "유저 관련 또는 인증 관련 api 입니다.")
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -36,6 +43,13 @@ public class UserController {
      * [POST] /app/users/logIn
      * @return BaseResponse<PostLoginRes>
      */
+    @Operation(summary = "로그인 메서드", description = "일반 로그인을 수행하며 결과로 인증 토큰을 반환")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "로그인 성공"),
+                    @ApiResponse(responseCode = "400", description = "로그인 실패")
+            }
+    )
     @ResponseBody
     @PostMapping("/logIn")
     public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq){
@@ -55,6 +69,7 @@ public class UserController {
      * email 중복 체크 API
      *
      */
+    @Operation(summary = "email 중복 체크 api", description = "email 중복 체크 api")
     @GetMapping("/duplicate/email")
     public BaseResponse<GetUserRes> checkEmail(@RequestParam("email") String email){
         if(email == null || email.equals("")){
@@ -72,6 +87,7 @@ public class UserController {
      * [POST] /app/users
      * @return BaseResponse<PostUserRes>
      */
+    @Operation(summary = "일반 회원가입 api", description = "일반적인 회원가입을 수행한다.")
     // Body
     @ResponseBody
     @PostMapping("")
@@ -116,6 +132,8 @@ public class UserController {
         PostUserRes postUserRes = userService.createUser(postUserReq);
         return new BaseResponse<>(postUserRes);
     }
+    @Operation(summary = "Oauth 회원가입 api", description = "OauthLogin 시도시 실재하는 유저가 없는 경우 일반 회원가입 페이지에서 Oauth 로그인으로부터 " +
+            "일부 정보를 받아 회원가입 진행")
     // Oauth 용 회원 가입
     @ResponseBody
     @PostMapping("/oauth")
@@ -164,6 +182,7 @@ public class UserController {
         return new BaseResponse<>(postOauthUserRes);
     }
 
+    @Operation(summary = "단일 유저 조회 api", description = "이메일 또는 휴대전화 번호로 유저 하나를 찾아온다.")
     /**
      * 회원 1명 조회 API
      * [GET] /app/users/:userId
@@ -178,7 +197,7 @@ public class UserController {
     }
 
 
-
+    @Operation(summary = "유저 수정 api", description = "email 아이디로 유저를 찾아 유저 정보를 수정한다.")
     /**
      * 유저정보변경 API
      * [PATCH] /app/users/:userId
@@ -209,6 +228,7 @@ public class UserController {
 
     }
 
+    @Operation(summary = "단일 유저 삭제 api", description = "유저 하나를 disable 처리한다.")
     /**
      * 유저정보삭제 API
      * [DELETE] /app/users/:userId
@@ -224,6 +244,7 @@ public class UserController {
         return new BaseResponse<>(result);
     }
 
+    @Operation(summary = "유저의 서비스 동의 수정 api", description = "유저에게서 서비스 동의 항목을 모두 동의한 항목을 받아온다.")
     @ResponseBody
     @PatchMapping("/{userId}/service-terms")
     public BaseResponse<PatchServiceTermsRes> updateServiceTerms(@PathVariable("userId") Long userId, @RequestBody PatchServiceTermsReq patchServiceTermsReq){
@@ -234,6 +255,7 @@ public class UserController {
         return new BaseResponse<>(patchServiceTermsRes);
     }
 
+    @Operation(summary = "유저 잠금 api", description = "계정을 잠궈놓는다. ")
     @ResponseBody
     @PatchMapping("/{userId}/lock")
     public BaseResponse<String> lockUser(@PathVariable("userId") Long userId){
@@ -247,6 +269,7 @@ public class UserController {
      * [GET] /app/users/auth/:socialLoginType/login
      * @return void
      */
+    @Operation(summary = "소셜 로그인 리다이렉트 api", description = "소셜 로그인 타입에 맞는 소셜 로그인 페이지로 리다이렉트를 수행한다.")
     @GetMapping("/auth/{socialLoginType}/login")
     public void socialLoginRedirect(@PathVariable(name="socialLoginType") String SocialLoginPath) throws IOException {
         Constant.SocialLoginType socialLoginType= Constant.SocialLoginType.valueOf(SocialLoginPath.toUpperCase());
@@ -259,6 +282,7 @@ public class UserController {
      * @param code API Server 로부터 넘어오는 code
      * @return SNS Login 요청 결과로 받은 Json 형태의 java 객체 (access_token, jwt_token, user_num 등)
      */
+    @Operation(summary = "소설 로그인 콜백 처리용 api", description = "소셜 Oauth2.0 인증 서버로부터 받은 인가 코드를 이용하여 액세스 토큰 교환 및 소셜 유저 정보 교환 및 앱 내부 인증 및 회원가입 진행")
     @ResponseBody
     @GetMapping(value = "/auth/{socialLoginType}/login/callback")
     public BaseResponse<GetSocialOAuthRes> socialLoginCallback(

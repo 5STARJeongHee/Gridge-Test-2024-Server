@@ -4,6 +4,7 @@ import com.example.demo.common.Constant;
 import com.example.demo.common.Role;
 import com.example.demo.src.user.entity.User;
 import lombok.Builder;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,7 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
-
+@Getter
 public class SecurityUser implements UserDetails {
     private Long id;
     private String email;
@@ -46,6 +47,7 @@ public class SecurityUser implements UserDetails {
         this.dataPolicyAgreed = dataPolicyAgreed;
         this.locationPolicyAgreed = locationPolicyAgreed;
     }
+
 
     public SecurityUser(User user) {
         this.id = user.getId();
@@ -105,4 +107,6 @@ public class SecurityUser implements UserDetails {
     public boolean isEnabled() {
         return !this.state.equals(State.INACTIVE);
     }
+
+
 }

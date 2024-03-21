@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
+import static com.example.demo.common.State.ACTIVE;
 import static com.example.demo.common.response.BaseResponseStatus.*;
 
 @RequiredArgsConstructor

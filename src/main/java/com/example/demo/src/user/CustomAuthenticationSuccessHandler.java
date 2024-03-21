@@ -1,17 +1,14 @@
 package com.example.demo.src.user;
 
 import com.example.demo.common.Constant.*;
-import com.example.demo.common.config.JwtProperties;
-import com.example.demo.src.token.RefreshTokenRepository;
+import com.example.demo.src.token.repository.RefreshTokenRepository;
 import com.example.demo.src.token.entity.RefreshToken;
 import com.example.demo.src.user.model.GetSocialOAuthRes;
 import com.example.demo.src.user.model.PostLoginRes;
+import com.example.demo.src.user.model.SecurityUser;
 import com.example.demo.utils.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import java.time.Duration;
 
 @RequiredArgsConstructor
 public class CustomAuthenticationSuccessHandler {
@@ -20,7 +17,7 @@ public class CustomAuthenticationSuccessHandler {
 
 
     public GetSocialOAuthRes onOauthAuthenticationSuccess(Authentication authentication, String oauthId, SocialLoginType socialLoginType, boolean exist){
-        UserDetails user = (UserDetails) authentication.getPrincipal();
+        SecurityUser user = (SecurityUser) authentication.getPrincipal();
         if(!exist){
             return GetSocialOAuthRes.builder()
                     .userId(user.getUsername())
@@ -46,7 +43,7 @@ public class CustomAuthenticationSuccessHandler {
     }
 
     public PostLoginRes onAuthenticationSuccess(Authentication authentication){
-        UserDetails user = (UserDetails) authentication.getPrincipal();
+        SecurityUser user = (SecurityUser) authentication.getPrincipal();
 
         // 인증 성공 이후 토큰 발급 및 반환 세팅
         // 리프레쉬 토큰 생성 및 저장

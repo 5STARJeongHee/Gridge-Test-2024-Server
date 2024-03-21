@@ -1,4 +1,4 @@
-package com.example.demo.src.user;
+package com.example.demo.src.user.repository;
 
 import com.example.demo.src.user.entity.SocialUser;
 import com.example.demo.src.user.entity.User;

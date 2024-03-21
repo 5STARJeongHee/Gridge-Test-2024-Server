@@ -2,8 +2,8 @@ package com.example.demo.src.user;
 
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.response.BaseResponseStatus;
-import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.SecurityUser;
+import com.example.demo.src.user.repository.UserRepository;
 import com.example.demo.utils.ValidationRegex;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

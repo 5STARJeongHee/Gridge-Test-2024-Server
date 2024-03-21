@@ -1,16 +1,12 @@
-package com.example.demo.src.token;
+package com.example.demo.src.token.service;
 
 import com.example.demo.common.config.JwtProperties;
 import com.example.demo.common.exceptions.BaseException;
-import com.example.demo.src.user.UserService;
-import com.example.demo.src.user.model.GetUserRes;
+import com.example.demo.src.user.model.SecurityUser;
 import com.example.demo.utils.JwtService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
-
-import java.time.Duration;
 
 import static com.example.demo.common.response.BaseResponseStatus.*;
 
@@ -29,7 +25,7 @@ public class TokenService {
         }
 
         String userId = refreshTokenService.findByRefreshToken(refreshToken).getUserId();
-        UserDetails user = userDetailsService.loadUserByUsername(userId);
+        SecurityUser user = (SecurityUser) userDetailsService.loadUserByUsername(userId);
         return jwtService.generateAccessToken(user);
     }
 

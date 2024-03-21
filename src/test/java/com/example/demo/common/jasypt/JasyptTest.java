@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
-@ActiveProfiles(value = {"dev", "prod"})
+@ActiveProfiles(value = {"prod"})
 @Import(value = {JasyptConfig.class})
 @SpringBootTest
 public class JasyptTest {
@@ -39,6 +39,15 @@ public class JasyptTest {
     @Value("${spring.datasource.password}")
     private String DATASOURCE_PASSWORD;
 
+    @Value("${pg.merchant.code}")
+    private String MERCHANT_CODE;
+    @Value("${pg.merchant.rest-api-key}")
+    private String MERCHANT_API_KEY;
+    @Value("${pg.merchant.rest-api-secret}")
+    private String MERCHANT_API_SECRET;
+
+    @Value("${pg.kakaopay.pg-code}")
+    private String MERCHANT_KAKAOPAY_CODE;
 
     @DisplayName("jasypt 암호화 정보 생성")
     @Test
@@ -80,6 +89,12 @@ public class JasyptTest {
         log.debug(" DATASOURCE_URL: [" + DATASOURCE_URL + "] has encrypted: " + "ENC("+datasourceUrl+")");
         log.debug(" DATASOURCE_USERNAME: [" + DATASOURCE_USERNAME + "] has encrypted: " + "ENC("+datasourceUsername+")");
         log.debug(" DATASOURCE_PASSWORD: [" + DATASOURCE_PASSWORD + "] has encrypted: " + "ENC("+datasourcePassword+")");
+
+        log.debug(" MERCHANT_CODE: [" + MERCHANT_CODE + "] has encrypted: " + "ENC("+jasyptStringEncryptor.encrypt(MERCHANT_CODE)+")");
+        log.debug(" MERCHANT_API_KEY: [" + MERCHANT_API_KEY + "] has encrypted: " + "ENC("+jasyptStringEncryptor.encrypt(MERCHANT_API_KEY)+")");
+        log.debug(" MERCHANT_API_SECRET: [" + MERCHANT_API_SECRET + "] has encrypted: " + "ENC("+jasyptStringEncryptor.encrypt(MERCHANT_API_SECRET)+")");
+        log.debug(" MERCHANT_KAKAOPAY_CODE: [" + MERCHANT_KAKAOPAY_CODE + "] has encrypted: " + "ENC("+jasyptStringEncryptor.encrypt(MERCHANT_KAKAOPAY_CODE)+")");
+
 
 
     }

@@ -1,7 +1,7 @@
-package com.example.demo.src.token;
+package com.example.demo.src.token.service;
 
 import com.example.demo.common.exceptions.BaseException;
-import com.example.demo.src.token.entity.RefreshToken;
+import com.example.demo.src.token.repository.RefreshTokenRepository;
 import com.example.demo.src.token.model.GetRefreshTokenRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

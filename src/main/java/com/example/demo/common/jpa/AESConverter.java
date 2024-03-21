@@ -1,4 +1,4 @@
-package com.example.demo.common.config;
+package com.example.demo.common.jpa;
 
 import com.example.demo.utils.AES256;
 import lombok.RequiredArgsConstructor;

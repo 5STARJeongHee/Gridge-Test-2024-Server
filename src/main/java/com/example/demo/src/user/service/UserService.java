@@ -1,8 +1,10 @@
-package com.example.demo.src.user;
+package com.example.demo.src.user.service;
 
 
 
 import com.example.demo.common.exceptions.BaseException;
+import com.example.demo.src.user.CustomAuthenticationSuccessHandler;
+import com.example.demo.src.user.repository.UserRepository;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
@@ -19,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
+import static com.example.demo.common.State.ACTIVE;
 import static com.example.demo.common.response.BaseResponseStatus.*;
 
 // Service Create, Update, Delete 의 로직 처리

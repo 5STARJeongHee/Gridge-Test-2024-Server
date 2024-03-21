@@ -1,5 +1,6 @@
 package com.example.demo.common.entity;
 
+import com.example.demo.common.State;
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -27,7 +28,5 @@ public class BaseEntity {
     @Column(name = "state", nullable = false, length = 10)
     protected State state = State.ACTIVE;
 
-    public enum State {
-        ACTIVE, INACTIVE, LOCK;
-    }
+
 }

@@ -4,6 +4,7 @@ package com.example.demo.utils;
 import com.example.demo.common.Role;
 import com.example.demo.common.config.JwtProperties;
 import com.example.demo.common.exceptions.BaseException;
+import com.example.demo.src.user.model.SecurityUser;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,19 +29,19 @@ public class JwtService {
     private final static String ROLE_PREFIX = "ROLE_";
     private final JwtProperties jwtProperties;
 
-    public String generateToken(UserDetails user, Duration expiredAt){
+    public String generateToken(SecurityUser user, Duration expiredAt){
         Date now = new Date();
         return createJwt(user, new Date(now.getTime() + expiredAt.toMillis()));
     }
 
-    public String generateAccessToken(UserDetails user){
+    public String generateAccessToken(SecurityUser user){
         Date now = new Date();
         return createJwt(
                 user,
                 new Date(now.getTime() + Duration.ofMinutes(jwtProperties.getAccessToken().getExpiredAt()).toMillis()));
     }
 
-    public String generateRefreshToken(UserDetails user){
+    public String generateRefreshToken(SecurityUser user){
         Date now = new Date();
         return createJwt(
                 user,
@@ -51,12 +52,12 @@ public class JwtService {
     @param userId
     @return String
      */
-    public String createJwt(UserDetails user, Date expiry){
+    public String createJwt(SecurityUser user, Date expiry){
         Date now = new Date();
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE,Header.JWT_TYPE)
                 .claim(CLAIMS_USER_ID,user.getUsername())
-                .claim(CLAIMS_USER_ROLE, ((SimpleGrantedAuthority)((HashSet)user.getAuthorities()).iterator().next()).getAuthority())
+                .claim(CLAIMS_USER_ROLE, user.getRole().toString())
                 .setIssuedAt(now)
                 .setExpiration(expiry)
                 .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
@@ -77,11 +78,13 @@ public class JwtService {
     public Authentication getAuthentication(String token) throws BaseException{
         Claims claims = getClaims(token);
         String role = getUserRole(claims);
-        Collection<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(role));
+        SecurityUser user = SecurityUser.builder()
+                .email(getUserId(claims))
+                .role(Role.valueOf(role)).build();
         return new UsernamePasswordAuthenticationToken(
-                new User(getUserId(claims),"",authorities),
+                user,
                 token,
-                authorities
+                user.getAuthorities()
         );
     }
     /*

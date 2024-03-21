@@ -4,26 +4,21 @@ import com.example.demo.common.Constant.*;
 import com.example.demo.common.Role;
 import com.example.demo.common.config.JwtProperties;
 import com.example.demo.common.exceptions.BaseException;
-import com.example.demo.src.token.RefreshTokenRepository;
-import com.example.demo.src.token.RefreshTokenService;
-import com.example.demo.src.token.entity.RefreshToken;
+import com.example.demo.src.token.repository.RefreshTokenRepository;
 import com.example.demo.src.user.CustomAuthenticationSuccessHandler;
-import com.example.demo.src.user.OauthUserService;
-import com.example.demo.src.user.UserService;
-import com.example.demo.src.user.entity.SocialUser;
+import com.example.demo.src.user.service.OauthUserService;
+import com.example.demo.src.user.service.UserService;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.Duration;
 
 import static com.example.demo.common.response.BaseResponseStatus.*;
 

@@ -1,6 +1,7 @@
 package com.example.demo.src.test;
 
 
+import com.example.demo.common.State;
 import com.example.demo.src.test.entity.Memo;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;

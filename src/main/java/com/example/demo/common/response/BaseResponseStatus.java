@@ -41,6 +41,7 @@ public enum BaseResponseStatus {
     RESPONSE_ERROR(false, HttpStatus.NOT_FOUND.value(), "값을 불러오는데 실패하였습니다."),
 
     DUPLICATED_EMAIL(false, HttpStatus.BAD_REQUEST.value(), "중복된 이메일입니다."),
+    DUPLICATED_USER(false, HttpStatus.BAD_REQUEST.value(), "이미 등록된 계정입니다."),
     INVALID_MEMO(false,HttpStatus.NOT_FOUND.value(), "존재하지 않는 메모입니다."),
     FAILED_TO_LOGIN(false,HttpStatus.NOT_FOUND.value(),"없는 아이디거나 비밀번호가 틀렸습니다."),
     EMPTY_JWT(false, HttpStatus.UNAUTHORIZED.value(), "JWT를 입력해주세요."),
@@ -53,8 +54,13 @@ public enum BaseResponseStatus {
     INACTIVE_USER(false, HttpStatus.FORBIDDEN.value(), "탈퇴한 유저입니다."),
     LOCK_USER(false, HttpStatus.FORBIDDEN.value(), "계정이 잠겼습니다."),
     EXPIRE_USER(false, HttpStatus.FORBIDDEN.value(), "계정이 만료되었습니다."),
+    EXPIRE_AUTHENTICATION(false, HttpStatus.FORBIDDEN.value(), "인증이 만료되었습니다."),
 
-
+    /** Order
+     *
+     */
+    POST_EMPTY_PGCODE(false, HttpStatus.BAD_REQUEST.value(), "PG 사 정보가 없습니다."),
+    POST_EMPTY_PAYMETHOD(false, HttpStatus.BAD_REQUEST.value(), "결제 방식 정보가 없습니다."),
     /**
      * 500 :  Database, Server 오류
      */
@@ -67,7 +73,9 @@ public enum BaseResponseStatus {
     MODIFY_FAIL_USERNAME(false,HttpStatus.INTERNAL_SERVER_ERROR.value(),"유저네임 수정 실패"),
     DELETE_FAIL_USERNAME(false,HttpStatus.INTERNAL_SERVER_ERROR.value(),"유저 삭제 실패"),
     MODIFY_FAIL_MEMO(false,HttpStatus.INTERNAL_SERVER_ERROR.value(),"메모 수정 실패"),
-
+    FAILED_PREORDER(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "사전 결제 정보 등록에 실패했습니다."),
+    INVALID_ORDER(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "결제 정보가 올바르지 않습니다."),
+    FAILED_ORDER(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "결제가 완료되지 못했습니다."),
     UNEXPECTED_ERROR(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "예상치 못한 에러가 발생했습니다.");
 
 
